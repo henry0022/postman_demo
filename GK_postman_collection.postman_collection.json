@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "GET PASS",
+			"name": "GETS",
 			"item": [
 				{
 					"name": "GET USERS",
@@ -16,12 +16,25 @@
 							"script": {
 								"id": "f960679b-db16-40b0-853d-2c7b4915187e",
 								"exec": [
-									"pm.test(\"response is 200\",function(){\r",
-									"pm.response.to.have.status(200);\r",
+									"pm.test(\"Check that GET USER request response code was 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
 									"});\r",
-									"pm.test(\"below 200\",function(){\r",
-									"pm.expect(pm.response.responseTime).to.below(2000);\r",
-									"});"
+									"pm.test(\"Check that GET USER request response time was below 2 seconds\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.below(2000);\r",
+									"});\r",
+									"var users = pm.response.json().data;\r",
+									"pm.test(\"Test to confirm that Janet Weaver's user profile is contained within the GET USER request response body\", () => {\r",
+									"    const expectedUser = {\r",
+									"        id: 2,\r",
+									"        email: \"janet.weaver@reqres.in\",\r",
+									"        first_name: \"Janet\",\r",
+									"        last_name: \"Weaver\",\r",
+									"        avatar: \"https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg\"\r",
+									"    };\r",
+									"    pm.expect(users).to.deep.include(expectedUser);\r",
+									"});\r",
+									"console.log(\"Users from response:\");\r",
+									"console.log(users);"
 								],
 								"type": "text/javascript"
 							}
@@ -31,9 +44,8 @@
 							"script": {
 								"id": "3648b0f7-0a46-4731-9a76-cf5e32ce5def",
 								"exec": [
-									"console.log(\"welcome jenkins\");\r",
 									"let e = pm.variables.get(\"url\");\r",
-									"console.log(e);"
+									"console.log(\"Connecting to API at URL: \" + e);"
 								],
 								"type": "text/javascript"
 							}
@@ -63,10 +75,32 @@
 				}
 			],
 			"description": "this is a folder for all get requests",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8451ca9b-8bcc-45d7-aab4-264792bf70af",
+						"type": "text/javascript",
+						"exec": [
+							"console.log(\"welcome to my jenkins + postman test automation build\");"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "6e465448-7baf-47bf-9da7-ef12b1b60fc7",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "POST",
+			"name": "POSTS",
 			"item": [
 				{
 					"name": "REGISTER USERS",
@@ -76,8 +110,41 @@
 							"script": {
 								"id": "466829cb-0944-4b03-b985-0b89c0e17793",
 								"exec": [
-									"console.log(\"welcome jenkins\");\r",
-									"pm.variables.get(\"url\");"
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"console.log(\"This should pass as the response is 200.\");\r",
+									"pm.test(\"Check that POST-REGISTER request response status was OK (200 response)\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if (pm.response.code == 200) {\r",
+									"    console.log(\"This test only runs when the test is successful. ( 200)\");\r",
+									"    pm.test(\"Check that POST-REGISTER request response contained a token and a id for the new user\", function () {\r",
+									"        pm.expect(jsonData.token).not.eq(undefined);\r",
+									"        pm.expect(jsonData.id).not.eq(undefined);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"if (pm.response.code != 200) {\r",
+									"    console.log(\"This test only runs when the response is not successful. ( NOT OK)\");\r",
+									"    pm.test(\"Check that the user is informed that 'Only defined users succeed registration' \", function () {\r",
+									"        pm.expect(jsonData.error).eq(\"Note: Only defined users succeed registration\");\r",
+									"    });\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "9cd664f0-8387-4fa4-a020-7ae66445542e",
+								"exec": [
+									"console.log(\"This is a pre request script that sets the username and password variable to keep the test from failing\");\r",
+									"pm.variables.set(\"email\", \"michael.lawson@reqres.in\");\r",
+									"pm.variables.set(\"password\", \"passed\");\r",
+									"\r",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -97,11 +164,9 @@
 							"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}"
 						},
 						"url": {
-							"raw": "https://reqres.in/api/register",
-							"protocol": "https",
+							"raw": "{{url}}/api/register",
 							"host": [
-								"reqres",
-								"in"
+								"{{url}}"
 							],
 							"path": [
 								"api",
@@ -119,8 +184,39 @@
 							"script": {
 								"id": "7670527f-629d-4467-acee-65897e8ef8d8",
 								"exec": [
-									"console.log(\"welcome jenkins\");\r",
-									"pm.variables.get(\"url\");"
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"console.log(\"This test should not pass as the response is 400: \");\r",
+									"pm.test(\"Check that POST-REGISTER request response was OK (200 response)\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if (pm.response.code == 200) {\r",
+									"    console.log(\"This test only runs when the test is successful. ( 200)\");\r",
+									"    pm.test(\"Check that POST-REGISTER request response contained a token and a id for the new user\", function () {\r",
+									"        pm.expect(jsonData.token).not.eq(undefined);\r",
+									"        pm.expect(jsonData.id).not.eq(undefined);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"if (pm.response.code != 200) {\r",
+									"    console.log(\"This test only runs when the response is not successful. ( NOT OK)\");\r",
+									"    pm.test(\"Check that the user is informed that 'Only defined users succeed registration' \", function () {\r",
+									"        pm.expect(jsonData.error).eq(\"Note: Only defined users succeed registration\");\r",
+									"    });\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "474959bc-38a0-41e9-8129-a98c70e263d9",
+								"exec": [
+									"pm.variables.set(\"email\", \"john@undefined.com\");\r",
+									"pm.variables.set(\"password\", \"failed\");\r",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -131,8 +227,8 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"type": "text",
+								"value": "application/json"
 							}
 						],
 						"body": {
@@ -140,11 +236,9 @@
 							"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}"
 						},
 						"url": {
-							"raw": "https://reqres.in/api/register",
-							"protocol": "https",
+							"raw": "{{url}}/api/register",
 							"host": [
-								"reqres",
-								"in"
+								"{{url}}"
 							],
 							"path": [
 								"api",
@@ -169,7 +263,7 @@
 				"id": "0719f982-60fe-409b-94d3-d89c4998a9fb",
 				"type": "text/javascript",
 				"exec": [
-					"console.log(\"this is postman collection automation by jenkins\");"
+					""
 				]
 			}
 		},
@@ -186,7 +280,7 @@
 	],
 	"variable": [
 		{
-			"id": "7d673f6a-6a80-4139-b6d6-acb702e97d18",
+			"id": "3695fbc2-3823-45c7-9f07-ec48a7a811ee",
 			"key": "url",
 			"value": "https://reqres.in"
 		}
