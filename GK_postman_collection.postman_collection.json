@@ -1,0 +1,195 @@
+{
+	"info": {
+		"_postman_id": "6d3cbe55-e04f-4a6c-9dec-e7288198303a",
+		"name": "GK_postman_collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET PASS",
+			"item": [
+				{
+					"name": "GET USERS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f960679b-db16-40b0-853d-2c7b4915187e",
+								"exec": [
+									"pm.test(\"response is 200\",function(){\r",
+									"pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"below 200\",function(){\r",
+									"pm.expect(pm.response.responseTime).to.below(2000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "3648b0f7-0a46-4731-9a76-cf5e32ce5def",
+								"exec": [
+									"console.log(\"welcome jenkins\");\r",
+									"let e = pm.variables.get(\"url\");\r",
+									"console.log(e);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users?page=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "this is a folder for all get requests",
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "POST",
+			"item": [
+				{
+					"name": "REGISTER USERS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "466829cb-0944-4b03-b985-0b89c0e17793",
+								"exec": [
+									"console.log(\"welcome jenkins\");\r",
+									"pm.variables.get(\"url\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}"
+						},
+						"url": {
+							"raw": "https://reqres.in/api/register",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REGISTER USERS FAIL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7670527f-629d-4467-acee-65897e8ef8d8",
+								"exec": [
+									"console.log(\"welcome jenkins\");\r",
+									"pm.variables.get(\"url\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}"
+						},
+						"url": {
+							"raw": "https://reqres.in/api/register",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "this is a folder for all post requests",
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "basic"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "0719f982-60fe-409b-94d3-d89c4998a9fb",
+				"type": "text/javascript",
+				"exec": [
+					"console.log(\"this is postman collection automation by jenkins\");"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "d7b77a10-cfb3-495d-82db-1218b7b4d596",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "7d673f6a-6a80-4139-b6d6-acb702e97d18",
+			"key": "url",
+			"value": "https://reqres.in"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
